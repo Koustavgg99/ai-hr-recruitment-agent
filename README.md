@@ -1,4 +1,4 @@
-# 🤖 AI HR Recruitment Agent
+ 🤖 AI HR Recruitment Agent
 
 An intelligent recruitment automation system that leverages AI to streamline the entire hiring process - from job description analysis to candidate outreach.
 
