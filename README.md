@@ -184,43 +184,6 @@ AI HR Recruitment Agent
 ### Daily Reports
 - `id`, `report_date`, metrics, `report_data` (JSON)
 
-## 🔧 Customization
-
-### Adding Real LinkedIn API
-
-Replace the `MockLinkedInAPI` class in `src/hr_agent.py`:
-
-```python
-class LinkedInAPI:
-    def __init__(self, client_id, client_secret):
-        # Initialize LinkedIn API client
-        pass
-    
-    def search_candidates(self, skills, location, experience_min):
-        # Implement real LinkedIn search
-        pass
-```
-
-### Email Integration
-
-Add SMTP configuration to send real emails:
-
-```python
-import smtplib
-from email.mime.text import MIMEText
-
-def send_email(to_email, subject, content):
-    # Implement actual email sending
-    pass
-```
-
-### Advanced AI Models
-
-Customize AI models in the configuration:
-
-```env
-OLLAMA_MODEL=llama3.1:70b  # Use larger model for better results
-```
 
 ## 📈 Key Metrics Tracked
 
@@ -230,12 +193,6 @@ OLLAMA_MODEL=llama3.1:70b  # Use larger model for better results
 - **Pipeline Status**: Overview of all active recruitment processes
 - **Performance Trends**: Weekly and monthly recruitment trends
 
-## 🔒 Privacy & Security
-
-- **Data Privacy**: All candidate data stored locally in SQLite
-- **API Security**: API keys stored in environment variables
-- **Local AI**: Ollama runs locally for sensitive data processing
-- **Configurable**: Easy to deploy on-premises for maximum data control
 
 ## 🧪 Testing
 
@@ -254,42 +211,13 @@ python main.py outreach 1 --preview
 python main.py report daily
 ```
 
-## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
 
 ## 📝 License
 
 MIT License - feel free to use and modify for your recruitment needs.
 
-## 🆘 Troubleshooting
 
-### Common Issues
-
-**Ollama Connection Failed:**
-- Ensure Ollama is running: `ollama serve`
-- Check the model is available: `ollama list`
-- Pull required model: `ollama pull llama3.1:8b`
-
-**Gemini API Errors:**
-- Verify API key is correct
-- Check API quota and billing
-- Ensure API is enabled in Google Cloud Console
-
-**Database Issues:**
-- Check write permissions for the data directory
-- Verify SQLite is properly installed
-
-### Support
-
-For issues and questions:
-1. Check the troubleshooting section above
-2. Review the error logs in the terminal
-3. Ensure all dependencies are installed correctly
 
 ---
 
