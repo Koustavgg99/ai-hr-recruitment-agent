@@ -35,46 +35,175 @@ except ImportError as e:
     st.error("Please ensure all required modules are in the same directory")
     DATABASE_AVAILABLE = False
 
-# Custom CSS
+# Enhanced Custom CSS with modern design
 st.markdown("""
 <style>
-    .main-header {
-        font-size: 2.5rem;
-        color: #1f77b4;
-        text-align: center;
-        margin-bottom: 2rem;
-        border-bottom: 2px solid #1f77b4;
+    /* Global styles */
+    .block-container {
+        padding-top: 1rem;
         padding-bottom: 1rem;
     }
-    .metric-container {
-        background-color: #f0f2f6;
+    
+    /* Header styles */
+    .main-header {
+        font-size: 2.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        position: relative;
+    }
+    
+    .main-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+    }
+    
+    .sub-header {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #3498db;
+        padding-left: 1rem;
+    }
+    
+    /* Card-like containers */
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e1e8ed;
+        margin: 0.5rem 0;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Status boxes */
+    .success-box {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        padding: 1.2rem;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+        margin: 1rem 0;
+        box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+    }
+    
+    .warning-box {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        color: #856404;
+        padding: 1.2rem;
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+        margin: 1rem 0;
+        box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2);
+    }
+    
+    .error-box {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+        padding: 1.2rem;
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+        margin: 1rem 0;
+        box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+    }
+    
+    .info-box {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+        padding: 1.2rem;
+        border-radius: 8px;
+        border-left: 4px solid #17a2b8;
+        margin: 1rem 0;
+        box-shadow: 0 2px 5px rgba(23, 162, 184, 0.2);
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: #f8f9fa;
+    }
+    
+    /* Button enhancements */
+    .stButton > button {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Form styling */
+    .stSelectbox label, .stTextInput label, .stTextArea label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    /* Metrics styling */
+    [data-testid="metric-container"] {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #dee2e6;
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+    }
+    
+    /* Data loading indicator */
+    .data-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+        background: #e8f5e8;
+        border-radius: 6px;
+        border-left: 3px solid #28a745;
         margin: 0.5rem 0;
     }
-    .success-box {
-        background-color: #d4edda;
-        color: #155724;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #c3e6cb;
-        margin: 1rem 0;
+    
+    .loading-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
     }
-    .warning-box {
-        background-color: #fff3cd;
-        color: #856404;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #ffeaa7;
-        margin: 1rem 0;
-    }
-    .error-box {
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #f5c6cb;
-        margin: 1rem 0;
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -84,6 +213,7 @@ class HRAutomationApp:
     
     def __init__(self):
         self.init_session_state()
+        self.auto_load_data_files()
         
     def init_session_state(self):
         """Initialize session state variables"""
@@ -98,8 +228,37 @@ class HRAutomationApp:
         if 'selected_candidates' not in st.session_state:
             st.session_state.selected_candidates = []
     
+    def auto_load_data_files(self):
+        """Auto-load data files silently on app startup"""
+        if 'data_loaded' not in st.session_state:
+            try:
+                # Load connections.csv
+                if os.path.exists("connections.csv"):
+                    df = pd.read_csv("connections.csv")
+                    st.session_state.candidates_data = df.to_dict('records')
+                
+                # Load job descriptions
+                job_files = [f for f in os.listdir('.') if f.startswith('job_') and f.endswith('.json')]
+                if job_files:
+                    jobs = []
+                    for job_file in job_files:
+                        with open(job_file, 'r', encoding='utf-8') as f:
+                            job_data = json.load(f)
+                            jobs.append(job_data)
+                    st.session_state.jobs_data = jobs
+                
+                # Load existing shortlists if available
+                if os.path.exists("shortlists.json"):
+                    with open("shortlists.json", "r", encoding="utf-8") as f:
+                        st.session_state.shortlists = json.load(f)
+                
+                st.session_state.data_loaded = True
+                
+            except Exception as e:
+                pass  # Fail silently on startup
+    
     def load_data_files(self):
-        """Load and validate data files"""
+        """Load and validate data files with user feedback"""
         try:
             # Load connections.csv
             if os.path.exists("connections.csv"):
@@ -122,6 +281,12 @@ class HRAutomationApp:
                 st.success(f"✅ Loaded {len(jobs)} job descriptions")
             else:
                 st.warning("⚠️ No job description files found (job_*.json)")
+            
+            # Load existing shortlists if available
+            if os.path.exists("shortlists.json"):
+                with open("shortlists.json", "r", encoding="utf-8") as f:
+                    st.session_state.shortlists = json.load(f)
+                st.success(f"✅ Loaded existing shortlists")
                 
             return True
             
@@ -965,17 +1130,50 @@ Agile/Scrum"""
                         display_data = []
                         for candidate_match in candidates:
                             candidate = candidate_match['candidate']
+                            # Try multiple possible field names for LinkedIn URL
+                            linkedin_url = candidate.get('linkedin_url', candidate.get('URL', candidate.get('url', 'Not available')))
+                            if linkedin_url and linkedin_url != 'Not available' and 'linkedin' in linkedin_url.lower():
+                                linkedin_display = linkedin_url  # Store the actual URL for clickable links
+                            else:
+                                linkedin_display = 'Not available'
+                            
                             display_data.append({
                                 'Name': candidate.get('full_name', 'Unknown'),
                                 'Email': candidate.get('email', 'Not available'),
                                 'Company': candidate.get('company', 'Not available'),
                                 'Position': candidate.get('position', 'Not available'),
+                                'LinkedIn': linkedin_display,
                                 'Score': f"{candidate_match['score']:.2f}",
                                 'Matched Skills': ', '.join(candidate_match.get('matched_skills', [])[:3])
                             })
                         
                         df = pd.DataFrame(display_data)
-                        st.dataframe(df, use_container_width=True)
+                        
+                        # Configure column types for clickable links
+                        column_config = {
+                            "LinkedIn": st.column_config.LinkColumn(
+                                "LinkedIn Profile",
+                                help="Click to open LinkedIn profile in new tab",
+                                display_text="🔗 LinkedIn"
+                            ),
+                            "Email": st.column_config.TextColumn(
+                                "Email",
+                                help="Candidate's email address"
+                            ),
+                            "Score": st.column_config.NumberColumn(
+                                "Match Score",
+                                help="Candidate matching score",
+                                format="%.2f"
+                            )
+                        }
+                        
+                        st.data_editor(
+                            df, 
+                            use_container_width=True,
+                            column_config=column_config,
+                            disabled=True,  # Make it read-only
+                            hide_index=True
+                        )
                     else:
                         st.info("No matches found for this position")
     
@@ -1079,88 +1277,307 @@ Agile/Scrum"""
     
     def bulk_email_interface(self, email_manager):
         """Interface for bulk email sending"""
-        st.subheader("📨 Bulk Email Sending")
+        st.subheader("📨 Enhanced Bulk Email Sending")
         
-        # Job selection
-        job_titles = list(st.session_state.shortlists.keys())
-        selected_job = st.selectbox("💼 Select Job for Bulk Email:", job_titles, key="bulk_job")
+        # Option to select from all candidates or job-specific
+        st.markdown('<div class="info-box">💡 <strong>Tip:</strong> You can send emails to candidates from all jobs or filter by specific job positions.</div>', unsafe_allow_html=True)
         
-        if selected_job:
-            candidates = st.session_state.shortlists[selected_job]
-            candidates_with_email = [
-                c for c in candidates 
-                if c['candidate'].get('email', '').strip()
-            ]
+        email_mode = st.radio(
+            "📧 Email Sending Mode:",
+            ["Job-Specific Candidates", "All Candidates with Emails", "Cross-Job Selection"],
+            help="Choose how you want to select candidates for bulk emailing"
+        )
+        
+        # Initialize candidate pool based on mode
+        if email_mode == "All Candidates with Emails":
+            # Get all candidates with emails from all jobs
+            all_candidates_with_email = []
+            for job_title, candidates in st.session_state.shortlists.items():
+                for candidate_match in candidates:
+                    if candidate_match['candidate'].get('email', '').strip():
+                        candidate_match['source_job'] = job_title
+                        all_candidates_with_email.append(candidate_match)
             
-            st.info(f"📊 {len(candidates_with_email)} candidates have email addresses out of {len(candidates)} total candidates")
+            st.info(f"📊 Found {len(all_candidates_with_email)} total candidates with email addresses across all jobs")
+            candidate_pool = all_candidates_with_email
             
-            if candidates_with_email:
-                # Template selection
-                templates = get_available_templates()
-                selected_template = st.selectbox("📝 Bulk Email Template:", templates, key="bulk_template")
+        elif email_mode == "Cross-Job Selection":
+            # Let user select multiple jobs first
+            job_titles = list(st.session_state.shortlists.keys())
+            selected_jobs = st.multiselect(
+                "💼 Select Job Positions:",
+                job_titles,
+                default=job_titles[:2] if len(job_titles) >= 2 else job_titles
+            )
+            
+            cross_job_candidates = []
+            for job_title in selected_jobs:
+                candidates = st.session_state.shortlists[job_title]
+                for candidate_match in candidates:
+                    if candidate_match['candidate'].get('email', '').strip():
+                        candidate_match['source_job'] = job_title
+                        cross_job_candidates.append(candidate_match)
+            
+            st.info(f"📊 Found {len(cross_job_candidates)} candidates with emails from {len(selected_jobs)} selected jobs")
+            candidate_pool = cross_job_candidates
+            
+        else:  # Job-Specific Candidates
+            job_titles = list(st.session_state.shortlists.keys())
+            selected_job = st.selectbox("💼 Select Job for Bulk Email:", job_titles, key="bulk_job")
+            
+            if selected_job:
+                candidates = st.session_state.shortlists[selected_job]
+                candidates_with_email = [
+                    c for c in candidates 
+                    if c['candidate'].get('email', '').strip()
+                ]
+                # Add source job info
+                for candidate_match in candidates_with_email:
+                    candidate_match['source_job'] = selected_job
                 
-                # Candidate selection
-                st.subheader("👥 Select Candidates")
-                
-                candidate_names = [c['candidate'].get('full_name', 'Unknown') for c in candidates_with_email]
-                
-                select_all = st.checkbox("✅ Select All Candidates")
-                if select_all:
-                    selected_candidates = st.multiselect(
-                        "Candidates to email:",
-                        candidate_names,
-                        default=candidate_names,
-                        key="bulk_candidates"
+                st.info(f"📊 {len(candidates_with_email)} candidates have email addresses out of {len(candidates)} total candidates")
+                candidate_pool = candidates_with_email
+            else:
+                candidate_pool = []
+        
+        if candidate_pool:
+            # Template selection
+            st.subheader("📝 Email Template Selection")
+            templates = get_available_templates()
+            selected_template = st.selectbox(
+                "📝 Select Email Template:", 
+                templates, 
+                key="bulk_template",
+                help="Choose the email template to use for all selected candidates"
+            )
+            
+            # Enhanced candidate selection interface
+            st.subheader("👥 Candidate Selection")
+            
+            # Filtering options
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                # Score filter
+                if candidate_pool:
+                    scores = [c.get('score', 0) for c in candidate_pool]
+                    min_score = st.slider(
+                        "🎯 Minimum Match Score",
+                        min_value=0.0,
+                        max_value=max(scores) if scores else 1.0,
+                        value=0.0,
+                        step=0.05,
+                        help="Filter candidates by minimum matching score"
+                    )
+            
+            with col2:
+                # Company filter
+                companies = list(set([c['candidate'].get('company', 'Unknown') for c in candidate_pool]))
+                selected_companies = st.multiselect(
+                    "🏢 Filter by Company",
+                    companies,
+                    default=companies,
+                    help="Select specific companies to include"
+                )
+            
+            with col3:
+                # Job source filter (for cross-job mode)
+                if email_mode in ["All Candidates with Emails", "Cross-Job Selection"]:
+                    job_sources = list(set([c.get('source_job', 'Unknown') for c in candidate_pool]))
+                    selected_job_sources = st.multiselect(
+                        "💼 Filter by Source Job",
+                        job_sources,
+                        default=job_sources,
+                        help="Filter by the job position that matched this candidate"
                     )
                 else:
-                    selected_candidates = st.multiselect(
-                        "Candidates to email:",
-                        candidate_names,
-                        key="bulk_candidates_manual"
-                    )
+                    selected_job_sources = [selected_job] if 'selected_job' in locals() else []
+            
+            # Apply filters
+            filtered_candidates = []
+            for candidate_match in candidate_pool:
+                candidate = candidate_match['candidate']
+                score = candidate_match.get('score', 0)
+                company = candidate.get('company', 'Unknown')
+                source_job = candidate_match.get('source_job', 'Unknown')
+                
+                if (score >= min_score and 
+                    company in selected_companies and 
+                    (not selected_job_sources or source_job in selected_job_sources)):
+                    filtered_candidates.append(candidate_match)
+            
+            st.info(f"📊 {len(filtered_candidates)} candidates match your filters")
+            
+            if filtered_candidates:
+                # Display candidate selection with enhanced information
+                st.markdown("**Select candidates to email:**")
+                
+                # Selection controls
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    select_all_filtered = st.checkbox("✅ Select All Filtered Candidates")
+                with col2:
+                    select_top_n = st.checkbox("🔝 Select Top N by Score")
+                with col3:
+                    if select_top_n:
+                        top_n = st.number_input("Number to select:", min_value=1, max_value=len(filtered_candidates), value=min(10, len(filtered_candidates)))
+                
+                # Create candidate options with enhanced display
+                candidate_options = {}
+                display_candidates = filtered_candidates.copy()
+                
+                # Sort by score for better display
+                display_candidates.sort(key=lambda x: x.get('score', 0), reverse=True)
+                
+                for i, candidate_match in enumerate(display_candidates):
+                    candidate = candidate_match['candidate']
+                    name = candidate.get('full_name', 'Unknown')
+                    email = candidate.get('email', '').strip()
+                    company = candidate.get('company', 'No Company')
+                    score = candidate_match.get('score', 0)
+                    source_job = candidate_match.get('source_job', 'Unknown Job')
+                    
+                    # Create enhanced display string
+                    if email_mode == "Job-Specific Candidates":
+                        display_name = f"{name} | {company} | Score: {score:.2f} | {email}"
+                    else:
+                        display_name = f"{name} | {company} | {source_job} | Score: {score:.2f} | {email}"
+                    
+                    candidate_options[display_name] = {
+                        'candidate_match': candidate_match,
+                        'name': name,
+                        'email': email,
+                        'company': company,
+                        'score': score,
+                        'source_job': source_job
+                    }
+                
+                # Determine default selection
+                default_selection = []
+                if select_all_filtered:
+                    default_selection = list(candidate_options.keys())
+                elif select_top_n and 'top_n' in locals():
+                    default_selection = list(candidate_options.keys())[:top_n]
+                
+                selected_candidate_keys = st.multiselect(
+                    "Select candidates:",
+                    list(candidate_options.keys()),
+                    default=default_selection,
+                    key="enhanced_bulk_candidates",
+                    help="Select the candidates you want to email. Use Ctrl+Click to select multiple."
+                )
+                
+                # Preview selected candidates
+                if selected_candidate_keys:
+                    with st.expander(f"👁️ Preview Selected Candidates ({len(selected_candidate_keys)} selected)", expanded=False):
+                        preview_data = []
+                        for key in selected_candidate_keys:
+                            candidate_info = candidate_options[key]
+                            preview_data.append({
+                                'Name': candidate_info['name'],
+                                'Email': candidate_info['email'],
+                                'Company': candidate_info['company'],
+                                'Score': f"{candidate_info['score']:.2f}",
+                                'Source Job': candidate_info['source_job']
+                            })
+                        
+                        preview_df = pd.DataFrame(preview_data)
+                        st.dataframe(preview_df, use_container_width=True)
                 
                 # Send bulk emails
-                if selected_candidates:
-                    st.write(f"📧 Ready to send {len(selected_candidates)} emails")
+                if selected_candidate_keys:
+                    st.markdown("---")
+                    st.subheader(f"🚀 Ready to Send {len(selected_candidate_keys)} Emails")
                     
-                    if st.button("📨 Send Bulk Emails", type="primary"):
-                        if st.checkbox("⚠️ I confirm sending bulk emails", key="bulk_confirm"):
-                            with st.spinner(f"Sending {len(selected_candidates)} emails..."):
-                                results = email_manager.send_bulk_emails_to_job_candidates(
-                                    st.session_state.shortlists,
-                                    selected_job,
-                                    selected_candidates,
-                                    selected_template
-                                )
+                    # Email preview option
+                    if st.button("👁️ Preview Email Template"):
+                        sample_candidate = candidate_options[selected_candidate_keys[0]]
+                        preview = email_manager.preview_email(
+                            sample_candidate['name'],
+                            sample_candidate['source_job'],
+                            selected_template
+                        )
+                        st.text_area("Email Preview (for first selected candidate):", preview, height=200)
+                    
+                    # Confirmation and sending
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        confirm_send = st.checkbox(
+                            f"⚠️ I confirm sending {len(selected_candidate_keys)} emails",
+                            help="Please confirm before sending bulk emails"
+                        )
+                    
+                    with col2:
+                        send_with_delay = st.checkbox(
+                            "⏰ Add delay between emails",
+                            value=True,
+                            help="Add a small delay between emails to avoid being flagged as spam"
+                        )
+                    
+                    if st.button("📨 Send Bulk Emails", type="primary", disabled=not confirm_send):
+                        with st.spinner(f"Sending {len(selected_candidate_keys)} emails..."):
+                            # Prepare candidates for email manager
+                            selected_candidates_for_email = [candidate_options[key]['name'] for key in selected_candidate_keys]
+                            
+                            # Create a custom shortlist for the email manager
+                            if email_mode == "Job-Specific Candidates":
+                                email_shortlists = {selected_job: candidate_pool}
+                                target_job = selected_job
+                            else:
+                                # For cross-job emails, group by source job
+                                email_shortlists = {}
+                                for key in selected_candidate_keys:
+                                    candidate_info = candidate_options[key]
+                                    source_job = candidate_info['source_job']
+                                    if source_job not in email_shortlists:
+                                        email_shortlists[source_job] = []
+                                    email_shortlists[source_job].append(candidate_info['candidate_match'])
                                 
-                                # Display results
-                                st.subheader("📊 Bulk Email Results")
-                                
-                                col1, col2, col3 = st.columns(3)
-                                with col1:
-                                    st.metric("✅ Sent Successfully", results.get('emails_sent', 0))
-                                with col2:
-                                    st.metric("❌ Failed", results.get('emails_failed', 0))
-                                with col3:
-                                    st.metric("📊 Total Processed", results.get('total_candidates', 0))
-                                
-                                # Show detailed results
-                                if results.get('sent_to'):
-                                    st.success("✅ Successfully sent to:")
+                                # Use the most common source job as target
+                                target_job = max(email_shortlists.keys(), key=lambda x: len(email_shortlists[x]))
+                            
+                            # Send emails
+                            results = email_manager.send_bulk_emails_to_job_candidates(
+                                email_shortlists,
+                                target_job,
+                                selected_candidates_for_email,
+                                selected_template
+                            )
+                            
+                            # Display results
+                            st.markdown("---")
+                            st.subheader("📊 Bulk Email Results")
+                            
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("✅ Sent Successfully", results.get('emails_sent', 0))
+                            with col2:
+                                st.metric("❌ Failed", results.get('emails_failed', 0))
+                            with col3:
+                                st.metric("📊 Total Processed", results.get('total_candidates', 0))
+                            
+                            # Show detailed results
+                            if results.get('sent_to'):
+                                with st.expander("✅ Successfully sent to:", expanded=True):
                                     for recipient in results['sent_to']:
                                         st.write(f"   • {recipient['name']} ({recipient['email']})")
-                                
-                                if results.get('failed_to'):
-                                    st.error("❌ Failed to send to:")
+                            
+                            if results.get('failed_to'):
+                                with st.expander("❌ Failed to send to:", expanded=True):
                                     for failed in results['failed_to']:
                                         st.write(f"   • {failed['name']}: {failed['reason']}")
-                                
-                                # Update session state
-                                st.session_state.email_log.extend(email_manager.email_log)
-                        else:
-                            st.warning("⚠️ Please confirm before sending bulk emails")
+                            
+                            # Update session state
+                            st.session_state.email_log.extend(email_manager.email_log)
+                            
+                            # Success message
+                            if results.get('emails_sent', 0) > 0:
+                                st.success(f"🎉 Successfully sent {results.get('emails_sent', 0)} emails!")
             else:
-                st.warning("⚠️ No candidates with email addresses found")
+                st.warning("⚠️ No candidates match your current filters. Try adjusting the filter criteria.")        
+        else:
+            st.warning("⚠️ No candidates with email addresses found for the selected criteria.")
     
     def email_templates_interface(self):
         """Interface for managing email templates"""
