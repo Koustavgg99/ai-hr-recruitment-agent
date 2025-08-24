@@ -1,0 +1,20 @@
+{
+  "title": "Junior Engineer",
+  "company": "AramTech",
+  "department": "Engineering",
+  "location": "Kolkata",
+  "experience_level": "Entry Level (0-2 years)",
+  "employment_type": "Full-time",
+  "description": "Job Description:\nWe are looking for a motivated Junior Engineer to join our team. As an entry-level engineer, you will assist in designing, developing, and testing solutions under the guidance of senior engineers. You will contribute to ongoing projects, help troubleshoot issues, and learn modern tools and technologies. This role is ideal for recent graduates who are eager to start their engineering career and grow in a collaborative environment.\n\nResponsibilities:\n\nAssist in the development, testing, and maintenance of software or systems.\n\nWork closely with senior engineers to support project deliverables.\n\nPerform basic debugging, documentation, and reporting tasks.\n\nLearn and apply best practices in coding, testing, and deployment.\n\nStay open to continuous learning and skill development.\n\nQualifications:\n\nBachelor’s degree in Engineering, Computer Science, or a related field.\n\nStrong problem-solving skills and eagerness to learn.\n\nBasic knowledge of programming languages (e.g., Python, Java, C++).\n\nGood communication and teamwork skills.",
+  "skills_required": [
+    "Python",
+    "Java"
+  ],
+  "skills_preferred": [],
+  "salary_range": "500000",
+  "benefits": "",
+  "reporting_to": "",
+  "team_size": "",
+  "created_date": "2025-08-23T22:42:51.949880",
+  "status": "active"
+}

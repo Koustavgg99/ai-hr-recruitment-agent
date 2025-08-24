@@ -1,0 +1,22 @@
+{
+  "title": "Machine Learning Engineer",
+  "company": "TechCorp",
+  "department": "Engineering",
+  "location": "Remote",
+  "experience_level": "Mid Level (3-5 years)",
+  "employment_type": "Full-time",
+  "description": "Job Description:\nWe are seeking a skilled Machine Learning Engineer with 3–5 years of experience to join our team. In this role, you will design, build, and deploy ML models to solve real-world problems, optimize workflows, and contribute to scalable AI solutions. You will collaborate with data scientists, software engineers, and product teams to turn data into actionable insights and production-grade applications.\n\nResponsibilities:\n\nDesign, train, and deploy machine learning models for production use.\n\nPreprocess and analyze large datasets from diverse sources.\n\nCollaborate with cross-functional teams to define ML-driven solutions.\n\nOptimize models for performance, scalability, and efficiency.\n\nMaintain and monitor deployed models, ensuring reliability and accuracy.\n\nStay updated with the latest ML/AI research, tools, and frameworks.\n\nQualifications:\n\nBachelor’s/Master’s in Computer Science, Engineering, or related field.\n\n3–5 years of professional experience in ML/AI projects.\n\nProficiency in Python and ML libraries (TensorFlow, PyTorch, Scikit-learn).\n\nStrong background in data structures, algorithms, and statistics.\n\nHands-on experience with model deployment (e.g., Flask, FastAPI, Docker).\n\nFamiliarity with cloud platforms (AWS, GCP, or Azure).\n\nGood communication and problem-solving skills.",
+  "skills_required": [
+    "Machine Learning",
+    "PySpark",
+    "Python",
+    "LLM"
+  ],
+  "skills_preferred": [],
+  "salary_range": "1000000",
+  "benefits": "",
+  "reporting_to": "",
+  "team_size": "",
+  "created_date": "2025-08-24T21:02:57.357044",
+  "status": "active"
+}

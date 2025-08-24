@@ -1,0 +1,24 @@
+{
+  "title": "Systems Desinger",
+  "company": "BATPharma",
+  "department": "Engineering ",
+  "location": "Kolkata",
+  "experience_level": "Entry Level (0-2 years)",
+  "employment_type": "Full-time",
+  "description": "Job Description:\nWe are seeking an enthusiastic Junior Systems Engineer to join our IT team. In this entry-level role, you will support the design, implementation, and maintenance of system infrastructures under the guidance of senior engineers. You will assist with troubleshooting, monitoring system performance, and ensuring smooth day-to-day operations. This position is ideal for recent graduates who are eager to learn and build a strong foundation in systems engineering.\n\nResponsibilities:\n\nAssist in installing, configuring, and maintaining hardware, software, and networks.\n\nMonitor system performance and troubleshoot issues as they arise.\n\nSupport backup, recovery, and security operations.\n\nWork with senior engineers to implement system upgrades and patches.\n\nDocument processes and provide user support when required.\n\nQualifications:\n\nBachelor’s degree in Computer Science, Information Technology, or a related field.\n\nBasic understanding of operating systems (Windows/Linux) and networking.\n\nFamiliarity with system administration tools and concepts.\n\nStrong problem-solving skills and willingness to learn.\n\nGood communication and teamwork abilities.",
+  "skills_required": [
+    "Python",
+    "DevOps",
+    "System Design",
+    "c++",
+    "AI",
+    "ML"
+  ],
+  "skills_preferred": [],
+  "salary_range": "800000",
+  "benefits": "",
+  "reporting_to": "",
+  "team_size": "",
+  "created_date": "2025-08-23T23:04:45.608357",
+  "status": "active"
+}
