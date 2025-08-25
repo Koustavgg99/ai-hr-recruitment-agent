@@ -1858,6 +1858,11 @@ Agile/Scrum"""
                 with col3:
                     st.write(f"**👔 Employment Type:** {member.get('employment_type', 'Not specified')}")
                     st.write(f"**👨‍💼 Reports To:** {member.get('manager', 'Not specified')}")
+                    linkedin_url = member.get('linkedin_url')
+                    if linkedin_url:
+                        st.write(f"**🔗 LinkedIn:** [Profile Link]({linkedin_url})")
+                    else:
+                        st.write(f"**🔗 LinkedIn:** Not provided")
                     st.write(f"**🆔 Member ID:** {member.get('id', 'Unknown')}")
                     st.write(f"**🕒 Added:** {member.get('created_at', 'Unknown')[:16] if member.get('created_at') else 'Unknown'}")
                 
@@ -1868,36 +1873,6 @@ Agile/Scrum"""
                 if member.get('notes'):
                     st.write(f"**📝 Notes:** {member['notes']}")
                 
-                # Action buttons
-                st.markdown("---")
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    if st.button(f"✏️ Edit", key=f"edit_member_{member.get('id', i)}"):
-                        st.info("Edit functionality will be available in a future update.")
-                
-                with col2:
-                    if st.button(f"📧 Send Email", key=f"email_member_{member.get('id', i)}"):
-                        st.info(f"Email functionality for {member['email']} will be available in a future update.")
-                
-                with col3:
-                    if st.button(f"🗑️ Remove", key=f"remove_member_{member.get('id', i)}"):
-                        if st.session_state.get(f"confirm_remove_member_{member.get('id', i)}", False):
-                            st.session_state.team_members = [
-                                m for m in st.session_state.team_members 
-                                if m.get('id') != member.get('id')
-                            ]
-                            # Save updated list
-                            try:
-                                with open("team_members.json", "w", encoding="utf-8") as f:
-                                    json.dump(st.session_state.team_members, f, indent=2, ensure_ascii=False)
-                                st.success(f"✅ Removed {member['full_name']}")
-                                st.rerun()
-                            except Exception as e:
-                                st.error(f"❌ Error removing team member: {e}")
-                        else:
-                            st.session_state[f"confirm_remove_member_{member.get('id', i)}"] = True
-                            st.warning("⚠️ Click again to confirm removal")
     
     def team_analytics(self):
         """Team analytics and insights"""
