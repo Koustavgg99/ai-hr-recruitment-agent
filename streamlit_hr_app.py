@@ -38,23 +38,52 @@ except ImportError as e:
 # Enhanced Custom CSS with modern design
 st.markdown("""
 <style>
-    /* Global styles */
+    /* Global styles - Enhanced responsive design */
     .block-container {
         padding-top: 1rem;
         padding-bottom: 1rem;
+        max-width: 100%;
+        overflow-x: auto;
     }
     
-    /* Header styles */
+    /* Responsive container for mobile devices */
+    @media (max-width: 768px) {
+        .main-header {
+            font-size: 2rem !important;
+            padding: 0.5rem 0.25rem !important;
+            line-height: 1.1 !important;
+        }
+        
+        .block-container {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
+    
+    /* Container width fix */
+    .main .block-container {
+        max-width: 100%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Header styles - Fixed for proper display */
     .main-header {
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         font-weight: 700;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
         text-align: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
+        margin: 1rem auto 2rem auto;
+        padding: 1rem 0.5rem;
         position: relative;
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        line-height: 1.2;
     }
     
     .main-header::after {
@@ -227,6 +256,8 @@ class HRAutomationApp:
             st.session_state.email_log = []
         if 'selected_candidates' not in st.session_state:
             st.session_state.selected_candidates = []
+        if 'team_members' not in st.session_state:
+            st.session_state.team_members = []
     
     def auto_load_data_files(self):
         """Auto-load data files silently on app startup"""
@@ -251,6 +282,11 @@ class HRAutomationApp:
                 if os.path.exists("shortlists.json"):
                     with open("shortlists.json", "r", encoding="utf-8") as f:
                         st.session_state.shortlists = json.load(f)
+                
+                # Load existing team members if available
+                if os.path.exists("team_members.json"):
+                    with open("team_members.json", "r", encoding="utf-8") as f:
+                        st.session_state.team_members = json.load(f)
                 
                 st.session_state.data_loaded = True
                 
@@ -1695,6 +1731,284 @@ Agile/Scrum"""
                         except Exception as e:
                             st.error(f"❌ Error generating documents: {e}")
     
+    def team_members_page(self):
+        """Team members management page"""
+        st.markdown('<h2 class="main-header">👥 Team Members</h2>', unsafe_allow_html=True)
+        
+        # Initialize team members in session state
+        if 'team_members' not in st.session_state:
+            st.session_state.team_members = []
+        
+        # Team overview metrics
+        st.subheader("📊 Team Overview")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("👥 Total Members", len(st.session_state.team_members))
+        with col2:
+            active_members = sum(1 for member in st.session_state.team_members if member.get('status') == 'Active')
+            st.metric("✅ Active Members", active_members)
+        with col3:
+            departments = set(member.get('department', 'Unknown') for member in st.session_state.team_members)
+            st.metric("🏢 Departments", len(departments))
+        with col4:
+            roles = set(member.get('role', 'Unknown') for member in st.session_state.team_members)
+            st.metric("💼 Roles", len(roles))
+        
+        # Tabs for team management features
+        tab1, tab2 = st.tabs(["👥 View All Members", "📊 Team Analytics"])
+        
+        with tab1:
+            self.view_team_members()
+        
+        with tab2:
+            self.team_analytics()
+    
+    
+    def view_team_members(self):
+        """Interface for viewing all team members"""
+        st.subheader("👥 All Team Members")
+        
+        if not st.session_state.team_members:
+            st.info("📝 No team members added yet. Add your first team member using the 'Add Team Member' tab.")
+            return
+        
+        # Filters and sorting
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            # Department filter
+            departments = sorted(set(member.get('department', 'Unknown') for member in st.session_state.team_members))
+            selected_departments = st.multiselect(
+                "Filter by Department:",
+                departments,
+                default=departments
+            )
+        
+        with col2:
+            # Status filter
+            statuses = sorted(set(member.get('status', 'Unknown') for member in st.session_state.team_members))
+            selected_statuses = st.multiselect(
+                "Filter by Status:",
+                statuses,
+                default=statuses
+            )
+        
+        with col3:
+            # Employment type filter
+            employment_types = sorted(set(member.get('employment_type', 'Unknown') for member in st.session_state.team_members))
+            selected_employment_types = st.multiselect(
+                "Filter by Employment Type:",
+                employment_types,
+                default=employment_types
+            )
+        
+        with col4:
+            # Sort options
+            sort_by = st.selectbox(
+                "Sort by:",
+                ["Name (A-Z)", "Name (Z-A)", "Department", "Role", "Start Date (Recent)", "Start Date (Oldest)"]
+            )
+        
+        # Filter team members
+        filtered_members = [
+            member for member in st.session_state.team_members
+            if (member.get('department', 'Unknown') in selected_departments and
+                member.get('status', 'Unknown') in selected_statuses and
+                member.get('employment_type', 'Unknown') in selected_employment_types)
+        ]
+        
+        # Sort team members
+        if sort_by == "Name (A-Z)":
+            filtered_members.sort(key=lambda x: x['full_name'].lower())
+        elif sort_by == "Name (Z-A)":
+            filtered_members.sort(key=lambda x: x['full_name'].lower(), reverse=True)
+        elif sort_by == "Department":
+            filtered_members.sort(key=lambda x: x.get('department', 'Unknown').lower())
+        elif sort_by == "Role":
+            filtered_members.sort(key=lambda x: x.get('role', 'Unknown').lower())
+        elif sort_by == "Start Date (Recent)":
+            filtered_members.sort(key=lambda x: x.get('start_date', '1900-01-01'), reverse=True)
+        else:  # Start Date (Oldest)
+            filtered_members.sort(key=lambda x: x.get('start_date', '1900-01-01'))
+        
+        st.info(f"📊 Showing {len(filtered_members)} of {len(st.session_state.team_members)} team members")
+        
+        # Display team members
+        for i, member in enumerate(filtered_members, 1):
+            # Create status indicator
+            status_emoji = {"Active": "🟢", "Inactive": "🔴", "On Leave": "🟡"}
+            status_icon = status_emoji.get(member.get('status'), "⚪")
+            
+            with st.expander(f"{status_icon} {i}. {member['full_name']} - {member.get('role', 'Unknown Role')} ({member.get('department', 'Unknown Dept')})"):
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.write(f"**👤 Name:** {member['full_name']}")
+                    st.write(f"**📧 Email:** {member['email']}")
+                    st.write(f"**📱 Phone:** {member.get('phone', 'Not provided')}")
+                    st.write(f"**💼 Role:** {member.get('role', 'Not specified')}")
+                
+                with col2:
+                    st.write(f"**🏢 Department:** {member.get('department', 'Not specified')}")
+                    st.write(f"**📊 Status:** {status_icon} {member.get('status', 'Unknown')}")
+                    st.write(f"**📅 Start Date:** {member.get('start_date', 'Not specified')}")
+                    st.write(f"**📍 Location:** {member.get('location', 'Not specified')}")
+                
+                with col3:
+                    st.write(f"**👔 Employment Type:** {member.get('employment_type', 'Not specified')}")
+                    st.write(f"**👨‍💼 Reports To:** {member.get('manager', 'Not specified')}")
+                    st.write(f"**🆔 Member ID:** {member.get('id', 'Unknown')}")
+                    st.write(f"**🕒 Added:** {member.get('created_at', 'Unknown')[:16] if member.get('created_at') else 'Unknown'}")
+                
+                # Skills and notes
+                if member.get('skills'):
+                    st.write(f"**🔧 Skills:** {member['skills']}")
+                
+                if member.get('notes'):
+                    st.write(f"**📝 Notes:** {member['notes']}")
+                
+                # Action buttons
+                st.markdown("---")
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    if st.button(f"✏️ Edit", key=f"edit_member_{member.get('id', i)}"):
+                        st.info("Edit functionality will be available in a future update.")
+                
+                with col2:
+                    if st.button(f"📧 Send Email", key=f"email_member_{member.get('id', i)}"):
+                        st.info(f"Email functionality for {member['email']} will be available in a future update.")
+                
+                with col3:
+                    if st.button(f"🗑️ Remove", key=f"remove_member_{member.get('id', i)}"):
+                        if st.session_state.get(f"confirm_remove_member_{member.get('id', i)}", False):
+                            st.session_state.team_members = [
+                                m for m in st.session_state.team_members 
+                                if m.get('id') != member.get('id')
+                            ]
+                            # Save updated list
+                            try:
+                                with open("team_members.json", "w", encoding="utf-8") as f:
+                                    json.dump(st.session_state.team_members, f, indent=2, ensure_ascii=False)
+                                st.success(f"✅ Removed {member['full_name']}")
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"❌ Error removing team member: {e}")
+                        else:
+                            st.session_state[f"confirm_remove_member_{member.get('id', i)}"] = True
+                            st.warning("⚠️ Click again to confirm removal")
+    
+    def team_analytics(self):
+        """Team analytics and insights"""
+        st.subheader("📊 Team Analytics")
+        
+        if not st.session_state.team_members:
+            st.info("📝 No team members to analyze. Add team members first.")
+            return
+        
+        # Department distribution
+        st.subheader("🏢 Department Distribution")
+        dept_counts = {}
+        for member in st.session_state.team_members:
+            dept = member.get('department', 'Unknown')
+            dept_counts[dept] = dept_counts.get(dept, 0) + 1
+        
+        if dept_counts:
+            dept_df = pd.DataFrame(list(dept_counts.items()), columns=['Department', 'Count'])
+            fig1 = px.pie(dept_df, values='Count', names='Department', title='Team Members by Department')
+            st.plotly_chart(fig1, use_container_width=True)
+        
+        # Status distribution
+        st.subheader("📊 Status Distribution")
+        status_counts = {}
+        for member in st.session_state.team_members:
+            status = member.get('status', 'Unknown')
+            status_counts[status] = status_counts.get(status, 0) + 1
+        
+        if status_counts:
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                status_df = pd.DataFrame(list(status_counts.items()), columns=['Status', 'Count'])
+                fig2 = px.bar(status_df, x='Status', y='Count', title='Team Members by Status')
+                st.plotly_chart(fig2, use_container_width=True)
+            
+            with col2:
+                # Employment type distribution
+                employment_counts = {}
+                for member in st.session_state.team_members:
+                    emp_type = member.get('employment_type', 'Unknown')
+                    employment_counts[emp_type] = employment_counts.get(emp_type, 0) + 1
+                
+                if employment_counts:
+                    emp_df = pd.DataFrame(list(employment_counts.items()), columns=['Employment Type', 'Count'])
+                    fig3 = px.bar(emp_df, x='Employment Type', y='Count', title='Team Members by Employment Type')
+                    st.plotly_chart(fig3, use_container_width=True)
+        
+        # Recent additions
+        st.subheader("📅 Recent Additions")
+        recent_members = sorted(
+            st.session_state.team_members, 
+            key=lambda x: x.get('created_at', '1900-01-01T00:00:00'), 
+            reverse=True
+        )[:5]  # Last 5 added
+        
+        if recent_members:
+            for member in recent_members:
+                created_date = member.get('created_at', 'Unknown')
+                if created_date != 'Unknown':
+                    created_date = created_date[:10]  # Just the date part
+                st.write(f"• **{member['full_name']}** ({member.get('role', 'Unknown Role')}) - Added: {created_date}")
+        
+        # Export team data
+        st.subheader("💾 Export Team Data")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button("📊 Export Team List"):
+                if st.session_state.team_members:
+                    # Create CSV data
+                    team_data = []
+                    for member in st.session_state.team_members:
+                        team_data.append({
+                            'ID': member.get('id', ''),
+                            'Name': member.get('full_name', ''),
+                            'Email': member.get('email', ''),
+                            'Phone': member.get('phone', ''),
+                            'Role': member.get('role', ''),
+                            'Department': member.get('department', ''),
+                            'Status': member.get('status', ''),
+                            'Start Date': member.get('start_date', ''),
+                            'Manager': member.get('manager', ''),
+                            'Location': member.get('location', ''),
+                            'Employment Type': member.get('employment_type', ''),
+                            'Skills': member.get('skills', ''),
+                            'Notes': member.get('notes', '')
+                        })
+                    
+                    csv_df = pd.DataFrame(team_data)
+                    csv_str = csv_df.to_csv(index=False)
+                    
+                    st.download_button(
+                        label="📥 Download Team CSV",
+                        data=csv_str,
+                        file_name=f"team_members_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                        mime="text/csv"
+                    )
+        
+        with col2:
+            if st.button("📋 Export Team JSON"):
+                if st.session_state.team_members:
+                    json_str = json.dumps(st.session_state.team_members, indent=2, ensure_ascii=False)
+                    st.download_button(
+                        label="📥 Download Team JSON",
+                        data=json_str,
+                        file_name=f"team_members_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                        mime="application/json"
+                    )
+
     def analytics_page(self):
         """Analytics and reporting page"""
         st.markdown('<h2 class="main-header">📈 Analytics & Reports</h2>', unsafe_allow_html=True)
@@ -1862,6 +2176,7 @@ def main():
         "🎯 Candidate Shortlisting": app.shortlisting_page,
         "📧 Email Management": app.email_page,
         "📄 Document Generation": app.documents_page,
+        "👥 Team Members": app.team_members_page,
         "📈 Analytics & Reports": app.analytics_page
     }
     

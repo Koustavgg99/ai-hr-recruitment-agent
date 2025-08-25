@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "full_name": "Koustav Sengupta",
+    "email": "koustav.sengupta@company.com",
+    "phone": "+91-9876543210",
+    "role": "Team Lead",
+    "department": "Tech",
+    "status": "Active",
+    "start_date": "2025-08-25",
+    "manager": "Team Lead",
+    "location": "India",
+    "employment_type": "Full-time",
+    "skills": "Leadership, Project Management, Agile Methodologies,AI Integration,Machine Learning",
+    "notes": "Team member specializing in recruitment and HR operations",
+    "linkedin_url": "https://www.linkedin.com/in/koustav-sengupta-200392267/",
+    "created_at": "2025-08-25T15:14:59Z"
+  },
+  {
+    "id": 2,
+    "full_name": "Subham Biswas",
+    "email": "subham.biswas@company.com",
+    "phone": "+91-9876543211",
+    "role": "Software Engineer",
+    "department": "Tech",
+    "status": "Active",
+    "start_date": "2025-08-25",
+    "manager": "Team Lead",
+    "location": "India",
+    "employment_type": "Full-time",
+    "skills": "Talent Acquisition, HR Analytics, Employee Relations",
+    "notes": "Team member handling coordination and administrative tasks",
+    "linkedin_url":"https://www.linkedin.com/in/subham-biswas-768b47255",
+    "created_at": "2025-08-25T15:14:59Z"
+  },
+  {
+    "id": 3,
+    "full_name": "Ankita Das",
+    "email": "ankitaan1234@gmail.com",
+    "phone": "+91-9876543212",
+    "role": "System Designer",
+    "department": "Tech",
+    "status": "Active",
+    "start_date": "2025-08-25",
+    "manager": "Team Lead",
+    "location": "India",
+    "employment_type": "Full-time",
+    "skills": "System Design, Software Architecture, Tech Strategy",
+    "notes": "Team member handling coordination and administrative tasks",
+    "linkedin_url": "https://www.linkedin.com/in/ankita-das-592967248/",
+    "created_at": "2025-08-25T15:14:59Z"
+  }
+]
