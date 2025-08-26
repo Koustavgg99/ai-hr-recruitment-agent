@@ -13,8 +13,7 @@
     "employment_type": "Full-time",
     "skills": "Leadership, Project Management, Agile Methodologies,AI Integration,Machine Learning",
     "notes": "Team member specializing in recruitment and HR operations",
-    "linkedin_url": "https://www.linkedin.com/in/koustav-sengupta-200392267/",
-    "created_at": "2025-08-25T15:14:59Z"
+    "linkedin_url": "https://www.linkedin.com/in/koustav-sengupta-200392267/"
   },
   {
     "id": 2,
@@ -30,8 +29,7 @@
     "employment_type": "Full-time",
     "skills": "Talent Acquisition, HR Analytics, Employee Relations",
     "notes": "Team member handling coordination and administrative tasks",
-    "linkedin_url":"https://www.linkedin.com/in/subham-biswas-768b47255",
-    "created_at": "2025-08-25T15:14:59Z"
+    "linkedin_url":"https://www.linkedin.com/in/subham-biswas-768b47255"
   },
   {
     "id": 3,
@@ -47,7 +45,6 @@
     "employment_type": "Full-time",
     "skills": "System Design, Software Architecture, Tech Strategy",
     "notes": "Team member handling coordination and administrative tasks",
-    "linkedin_url": "https://www.linkedin.com/in/ankita-das-592967248/",
-    "created_at": "2025-08-25T15:14:59Z"
+    "linkedin_url": "https://www.linkedin.com/in/ankita-das-592967248/"
   }
 ]
