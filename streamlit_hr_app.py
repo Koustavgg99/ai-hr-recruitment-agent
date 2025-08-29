@@ -334,6 +334,31 @@ class HRAutomationApp:
         """Main dashboard page"""
         st.markdown('<h1 class="main-header">🎯 HR Automation Dashboard</h1>', unsafe_allow_html=True)
         
+        # Environment configuration status
+        with st.expander("⚙️ Environment Configuration", expanded=False):
+            try:
+                from config import config
+                status_summary = config.get_status_summary()
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.write("**🤖 AI & APIs:**")
+                    st.write(f"• Gemini AI: {status_summary['gemini_ai']}")
+                    st.write(f"• LinkedIn API: {status_summary['linkedin']}")
+                
+                with col2:
+                    st.write("**📧 Email & Database:**")
+                    st.write(f"• Email Config: {status_summary['email']}")
+                    st.write(f"• Database: {status_summary['database']}")
+                    st.write(f"• Debug Mode: {status_summary['debug_mode']}")
+                    
+                if not config.is_gemini_configured():
+                    st.info("💡 Add your Gemini API key to the .env file for enhanced resume parsing")
+                    
+            except ImportError:
+                st.warning("Configuration module not available")
+        
         # Load data files
         with st.expander("📁 Data Files Status", expanded=True):
             if st.button("🔄 Refresh Data"):
@@ -423,149 +448,204 @@ class HRAutomationApp:
             self.search_candidates_interface(db)
     
     def add_candidate_interface(self, db):
-        """Interface for adding new candidates"""
+        """Interface for adding new candidates with manual and auto-fill options"""
         st.subheader("➕ Add New Candidate")
-        
-        with st.form("add_candidate_form"):
-            # Basic information
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                full_name = st.text_input(
-                    "Full Name *",
-                    placeholder="e.g., John Doe",
-                    help="Enter the candidate's full name"
-                )
+
+        # Tabs for Manual vs Auto-Fill
+        tab_manual, tab_auto = st.tabs(["✍️ Manual Entry", "🤖 Auto-Fill (Resume/LinkedIn)"])
+
+        with tab_auto:
+            # Lazy import to avoid Streamlit import issues at module import time
+            try:
+                from candidate_autofill import CandidateAutoFill, validate_extracted_data
                 
-                email = st.text_input(
-                    "Email Address",
-                    placeholder="e.g., john.doe@example.com",
-                    help="Enter the candidate's email address"
-                )
-                
-                linkedin_url = st.text_input(
-                    "LinkedIn URL *",
-                    placeholder="e.g., https://linkedin.com/in/johndoe",
-                    help="Enter the candidate's LinkedIn profile URL"
-                )
-            
-            with col2:
-                company = st.text_input(
-                    "Current Company",
-                    placeholder="e.g., Tech Solutions Inc.",
-                    help="Enter the candidate's current company"
-                )
-                
-                position = st.text_input(
-                    "Current Position",
-                    placeholder="e.g., Senior Software Engineer",
-                    help="Enter the candidate's current job title"
-                )
-                
-                location = st.text_input(
-                    "Location",
-                    placeholder="e.g., New York, NY",
-                    help="Enter the candidate's location"
-                )
-            
-            # Additional information
-            st.subheader("Additional Information")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                skills = st.text_area(
-                    "Skills (comma-separated)",
-                    placeholder="e.g., Python, JavaScript, React, Node.js, AWS",
-                    height=100,
-                    help="List the candidate's technical skills"
-                )
-            
-            with col2:
-                experience_summary = st.text_area(
-                    "Experience Summary",
-                    placeholder="Brief summary of candidate's experience...",
-                    height=100,
-                    help="Provide a brief summary of the candidate's experience"
-                )
-            
-            # Connected date
-            connected_on = st.date_input(
-                "Connected On",
-                value=datetime.now().date(),
-                help="Date when you connected with this candidate"
-            )
-            
-            # Submit button
-            submitted = st.form_submit_button("✨ Add Candidate", type="primary")
-            
-            if submitted:
-                # Validate required fields
-                if not full_name or not linkedin_url:
-                    st.error("❌ Please fill in all required fields (marked with *)")
-                    return
-                
-                # Validate LinkedIn URL format
-                if not linkedin_url.startswith(('http://', 'https://')):
-                    st.error("❌ Please enter a valid LinkedIn URL starting with http:// or https://")
-                    return
-                
-                # Prepare candidate data
-                candidate_data = {
-                    'full_name': full_name.strip(),
-                    'email': email.strip(),
-                    'linkedin_url': linkedin_url.strip(),
-                    'company': company.strip(),
-                    'position': position.strip(),
-                    'location': location.strip(),
-                    'skills': skills.strip(),
-                    'experience_summary': experience_summary.strip(),
-                    'connected_on': connected_on.strftime('%d-%b-%y')
-                }
-                
-                # Add candidate to database and CSV
+                # Import configuration and initialize auto-fill
                 try:
-                    with st.spinner("Adding candidate to database and CSV..."):
-                        candidate_id = db.add_candidate(candidate_data)
-                        
-                        if candidate_id:
-                            st.success(f"✅ Candidate '{full_name}' added successfully!")
-                            st.success(f"🆔 Assigned Database ID: {candidate_id}")
-                            st.info("📄 Candidate has been added to both database and CSV file")
-                            
-                            # Show confirmation details
-                            with st.expander("👁️ Added Candidate Details", expanded=True):
-                                col1, col2 = st.columns(2)
-                                
-                                with col1:
-                                    st.write(f"**Name:** {candidate_data['full_name']}")
-                                    st.write(f"**Email:** {candidate_data['email'] or 'Not provided'}")
-                                    st.write(f"**Company:** {candidate_data['company'] or 'Not provided'}")
-                                    st.write(f"**Position:** {candidate_data['position'] or 'Not provided'}")
-                                
-                                with col2:
-                                    st.write(f"**Location:** {candidate_data['location'] or 'Not provided'}")
-                                    st.write(f"**LinkedIn:** [Profile Link]({candidate_data['linkedin_url']})")
-                                    st.write(f"**Connected:** {candidate_data['connected_on']}")
-                                    st.write(f"**Database ID:** {candidate_id}")
-                                
-                                if candidate_data['skills']:
-                                    st.write(f"**Skills:** {candidate_data['skills']}")
-                                
-                                if candidate_data['experience_summary']:
-                                    st.write(f"**Experience:** {candidate_data['experience_summary']}")
-                            
-                            # Update session state if needed
-                            try:
-                                self.load_data_files()
-                            except:
-                                pass  # Ignore if CSV loading fails
-                        
-                        else:
-                            st.warning("⚠️ Candidate may already exist with this LinkedIn URL")
-                            
-                except Exception as e:
-                    st.error(f"❌ Error adding candidate: {str(e)}")
+                    from config import config, GEMINI_API_KEY
+                    env_gemini_api_key = GEMINI_API_KEY
+                except ImportError:
+                    env_gemini_api_key = None
+                
+                # Initialize auto-fill with API key from environment configuration
+                autofill = CandidateAutoFill(gemini_api_key=env_gemini_api_key)
+                
+                status_info = autofill.get_status_info()
+                st.write("**Auto-Fill Status:**")
+                for service, status in status_info.items():
+                    st.write(f"• {service}: {status}")
+                
+                # Show Gemini AI status
+                if env_gemini_api_key and autofill.hybrid_parser:
+                    st.success("")
+                elif env_gemini_api_key:
+                    st.warning("🤖 Gemini AI Enhanced Parsing: ⚠️ Failed to initialize")
+                else:
+                    st.info("🤖 Gemini AI Enhanced Parsing: ➖ Not configured")
+
+                extracted = autofill.render_autofill_interface()
+                if extracted:
+                    # Allow user to push extracted values into the manual form below via session_state
+                    st.session_state["prefill_candidate_data"] = extracted
+                    st.success("✅ Extracted data is ready. You can review and save it from the Manual Entry tab below.")
+            except Exception as e:
+                st.warning(f"Auto-fill interface unavailable: {e}")
+
+        with tab_manual:
+            # Pre-fill with extracted data if available
+            prefill = st.session_state.get("prefill_candidate_data", {})
+
+            with st.form("add_candidate_form"):
+                # Basic information
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    full_name = st.text_input(
+                        "Full Name *",
+                        value=prefill.get('full_name', ''),
+                        placeholder="e.g., John Doe",
+                        help="Enter the candidate's full name"
+                    )
+
+                    email = st.text_input(
+                        "Email Address",
+                        value=prefill.get('email', ''),
+                        placeholder="e.g., john.doe@example.com",
+                        help="Enter the candidate's email address"
+                    )
+
+                    linkedin_url = st.text_input(
+                        "LinkedIn URL *",
+                        value=prefill.get('linkedin_url', ''),
+                        placeholder="e.g., https://linkedin.com/in/johndoe",
+                        help="Enter the candidate's LinkedIn profile URL"
+                    )
+
+                with col2:
+                    company = st.text_input(
+                        "Current Company",
+                        value=prefill.get('company', ''),
+                        placeholder="e.g., Tech Solutions Inc.",
+                        help="Enter the candidate's current company"
+                    )
+
+                    position = st.text_input(
+                        "Current Position",
+                        value=prefill.get('position', ''),
+                        placeholder="e.g., Senior Software Engineer",
+                        help="Enter the candidate's current job title"
+                    )
+
+                    location = st.text_input(
+                        "Location",
+                        value=prefill.get('location', ''),
+                        placeholder="e.g., New York, NY",
+                        help="Enter the candidate's location"
+                    )
+
+                # Additional information
+                st.subheader("Additional Information")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    skills = st.text_area(
+                        "Skills (comma-separated)",
+                        value=prefill.get('skills', ''),
+                        placeholder="e.g., Python, JavaScript, React, Node.js, AWS",
+                        height=100,
+                        help="List the candidate's technical skills"
+                    )
+
+                with col2:
+                    experience_summary = st.text_area(
+                        "Experience Summary",
+                        value=prefill.get('experience_summary', ''),
+                        placeholder="Brief summary of candidate's experience...",
+                        height=100,
+                        help="Provide a brief summary of the candidate's experience"
+                    )
+
+                # Connected date
+                connected_on = st.date_input(
+                    "Connected On",
+                    value=datetime.now().date(),
+                    help="Date when you connected with this candidate"
+                )
+
+                # Submit button
+                submitted = st.form_submit_button("✨ Add Candidate", type="primary")
+
+                if submitted:
+                    # Validate required fields
+                    if not full_name or not linkedin_url:
+                        st.error("❌ Please fill in all required fields (marked with *)")
+                        return
+
+                    # Validate LinkedIn URL format
+                    if not linkedin_url.startswith(('http://', 'https://')):
+                        st.error("❌ Please enter a valid LinkedIn URL starting with http:// or https://")
+                        return
+
+                    # Prepare candidate data
+                    candidate_data = {
+                        'full_name': full_name.strip(),
+                        'email': email.strip(),
+                        'linkedin_url': linkedin_url.strip(),
+                        'company': company.strip(),
+                        'position': position.strip(),
+                        'location': location.strip(),
+                        'skills': skills.strip(),
+                        'experience_summary': experience_summary.strip(),
+                        'connected_on': connected_on.strftime('%d-%b-%y')
+                    }
+
+                    # Add candidate to database and CSV
+                    try:
+                        with st.spinner("Adding candidate to database and CSV..."):
+                            candidate_id = db.add_candidate(candidate_data)
+
+                            if candidate_id:
+                                st.success(f"✅ Candidate '{full_name}' added successfully!")
+                                st.success(f"🆔 Assigned Database ID: {candidate_id}")
+                                st.info("📄 Candidate has been added to both database and CSV file")
+
+                                # Show confirmation details
+                                with st.expander("👁️ Added Candidate Details", expanded=True):
+                                    col1, col2 = st.columns(2)
+
+                                    with col1:
+                                        st.write(f"**Name:** {candidate_data['full_name']}")
+                                        st.write(f"**Email:** {candidate_data['email'] or 'Not provided'}")
+                                        st.write(f"**Company:** {candidate_data['company'] or 'Not provided'}")
+                                        st.write(f"**Position:** {candidate_data['position'] or 'Not provided'}")
+
+                                    with col2:
+                                        st.write(f"**Location:** {candidate_data['location'] or 'Not provided'}")
+                                        st.write(f"**LinkedIn:** [Profile Link]({candidate_data['linkedin_url']})")
+                                        st.write(f"**Connected:** {candidate_data['connected_on']}")
+                                        st.write(f"**Database ID:** {candidate_id}")
+
+                                    if candidate_data['skills']:
+                                        st.write(f"**Skills:** {candidate_data['skills']}")
+
+                                    if candidate_data['experience_summary']:
+                                        st.write(f"**Experience:** {candidate_data['experience_summary']}")
+
+                                # Clear prefill after successful add
+                                if 'prefill_candidate_data' in st.session_state:
+                                    del st.session_state['prefill_candidate_data']
+
+                                # Update session state if needed
+                                try:
+                                    self.load_data_files()
+                                except:
+                                    pass  # Ignore if CSV loading fails
+
+                            else:
+                                st.warning("⚠️ Candidate may already exist with this LinkedIn URL")
+
+                    except Exception as e:
+                        st.error(f"❌ Error adding candidate: {str(e)}")
     
     def view_all_candidates(self, db):
         """Interface for viewing all candidates"""
