@@ -29,11 +29,14 @@ try:
     from enhanced_email_system import EnhancedEmailManager
     from hr_email_config import get_available_templates, get_email_template
     from database_manager import CandidateDatabase, get_database
+    from ai_content_generator import get_ai_generator
     DATABASE_AVAILABLE = True
+    AI_GENERATOR_AVAILABLE = True
 except ImportError as e:
     st.error(f"Import error: {e}")
     st.error("Please ensure all required modules are in the same directory")
     DATABASE_AVAILABLE = False
+    AI_GENERATOR_AVAILABLE = False
 
 # Enhanced Custom CSS with modern design
 st.markdown("""
@@ -425,10 +428,32 @@ class HRAutomationApp:
         """Interface for adding new candidates with manual and auto-fill options"""
         st.subheader("➕ Add New Candidate")
 
-        # Tabs for Manual vs Auto-Fill
-        tab_manual, tab_auto = st.tabs(["✍️ Manual Entry", "🤖 Auto-Fill (Resume/LinkedIn)"])
-
-        with tab_auto:
+        # Initialize tab state for automatic switching
+        if 'active_candidate_tab' not in st.session_state:
+            st.session_state.active_candidate_tab = "auto"  # Default to Auto-Fill tab
+        
+        # Check if we should switch to manual entry tab after extraction
+        if st.session_state.get('switch_to_manual_entry', False):
+            st.session_state.active_candidate_tab = "manual"  # Switch to Manual Entry tab
+            st.session_state.switch_to_manual_entry = False  # Reset the flag
+        
+        # Tab selection using radio buttons for programmatic control
+        tab_choice = st.radio(
+            "Choose Entry Method:",
+            ["✍️ Manual Entry", "🤖 Auto-Fill (Resume/LinkedIn)"],
+            index=0 if st.session_state.active_candidate_tab == "manual" else 1,
+            horizontal=True,
+            help="Select how you want to add candidate information"
+        )
+        
+        # Update active tab based on user selection
+        if tab_choice == "✍️ Manual Entry":
+            st.session_state.active_candidate_tab = "manual"
+        else:
+            st.session_state.active_candidate_tab = "auto"
+        
+        # Display appropriate interface based on selection
+        if st.session_state.active_candidate_tab == "auto":
             # Lazy import to avoid Streamlit import issues at module import time
             try:
                 from candidate_autofill import CandidateAutoFill, validate_extracted_data
@@ -460,11 +485,14 @@ class HRAutomationApp:
                 if extracted:
                     # Allow user to push extracted values into the manual form below via session_state
                     st.session_state["prefill_candidate_data"] = extracted
-                    st.success("✅ Extracted data is ready. You can review and save it from the Manual Entry tab below.")
+                    # Set flag to switch to manual entry tab
+                    st.session_state.switch_to_manual_entry = True
+                    st.success("✅ Extracted data is ready. Switching to Manual Entry tab to review and save.")
+                    st.rerun()  # Trigger rerun to switch tab
             except Exception as e:
                 st.warning(f"Auto-fill interface unavailable: {e}")
-
-        with tab_manual:
+        
+        elif st.session_state.active_candidate_tab == "manual":
             # Pre-fill with extracted data if available
             prefill = st.session_state.get("prefill_candidate_data", {})
 
@@ -799,49 +827,155 @@ class HRAutomationApp:
             self.manage_existing_jobs()
     
     def create_job_interface(self):
-        """Interface for creating new job descriptions"""
+        """Interface for creating new job descriptions with AI assistance"""
         st.subheader("📝 Create New Job Description")
         
+        # Initialize AI generator
+        ai_generator = None
+        if AI_GENERATOR_AVAILABLE:
+            try:
+                ai_generator = get_ai_generator()
+                if ai_generator:
+                    st.success("🤖 AI Content Generation Available")
+                    # Show AI service status
+                    status = ai_generator.get_status()
+                    status_cols = st.columns(len(status))
+                    for i, (service, status_text) in enumerate(status.items()):
+                        with status_cols[i]:
+                            st.write(f"**{service}:** {status_text}")
+                else:
+                    st.warning("⚠️ AI services not available. Check Ollama or Gemini API configuration.")
+            except Exception as e:
+                st.error(f"❌ AI generator initialization failed: {e}")
+        
+        # Initialize session state for generated content
+        if 'ai_generated_description' not in st.session_state:
+            st.session_state.ai_generated_description = ""
+        if 'ai_generated_required_skills' not in st.session_state:
+            st.session_state.ai_generated_required_skills = ""
+        if 'ai_generated_preferred_skills' not in st.session_state:
+            st.session_state.ai_generated_preferred_skills = ""
+        
+        # Shared basic job information fields (used for both AI generation and form)
+        st.subheader("📋 Basic Job Information")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            job_title = st.text_input(
+                "Job Title *", 
+                placeholder="e.g., Senior Python Developer",
+                key="shared_job_title"
+            )
+            
+            company_name = st.text_input(
+                "Company Name *",
+                placeholder="e.g., Tech Solutions Inc.",
+                key="shared_company_name"
+            )
+        
+        with col2:
+            experience_level = st.selectbox(
+                "Experience Level *",
+                ["Entry Level (0-2 years)", "Mid Level (3-5 years)", "Senior Level (6-10 years)", "Lead/Principal (10+ years)"],
+                key="shared_experience_level"
+            )
+            
+            department = st.text_input(
+                "Department",
+                placeholder="e.g., Engineering, Marketing",
+                key="shared_department"
+            )
+        
+        # AI Generation buttons (using shared fields)
+        if ai_generator:
+            st.markdown("### 🤖 AI Content Generation")
+            st.info("💡 Use the basic job information above to generate AI content below.")
+            
+            # AI generation buttons
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                if st.button("🤖 Generate Job Description", key="generate_description_btn"):
+                    if job_title and company_name:
+                        with st.spinner("🤖 Generating job description..."):
+                            try:
+                                generated_description = ai_generator.generate_job_description(
+                                    job_title=job_title,
+                                    company_name=company_name,
+                                    experience_level=experience_level,
+                                    employment_type="Full-time",
+                                    location="",
+                                    department=department
+                                )
+                                if generated_description:
+                                    st.session_state.ai_generated_description = generated_description
+                                    st.success("✅ Job description generated!")
+                                    st.rerun()
+                                else:
+                                    st.error("❌ Failed to generate job description.")
+                            except Exception as e:
+                                st.error(f"❌ Error: {e}")
+                    else:
+                        st.warning("⚠️ Please fill in Job Title and Company Name first.")
+            
+            with col2:
+                if st.button("🤖 Generate Skills", key="generate_skills_btn"):
+                    if job_title:
+                        with st.spinner("🤖 Generating skills..."):
+                            try:
+                                required_skills, preferred_skills = ai_generator.generate_skills(
+                                    job_title=job_title,
+                                    experience_level=experience_level,
+                                    department=department
+                                )
+                                if required_skills:
+                                    st.session_state.ai_generated_required_skills = "\n".join(required_skills)
+                                if preferred_skills:
+                                    st.session_state.ai_generated_preferred_skills = "\n".join(preferred_skills)
+                                
+                                if required_skills or preferred_skills:
+                                    st.success("✅ Skills generated!")
+                                    st.rerun()
+                                else:
+                                    st.error("❌ Failed to generate skills.")
+                            except Exception as e:
+                                st.error(f"❌ Error: {e}")
+                    else:
+                        st.warning("⚠️ Please fill in Job Title first.")
+            
+            with col3:
+                if st.button("🗑️ Clear AI Content", key="clear_ai_content"):
+                    st.session_state.ai_generated_description = ""
+                    st.session_state.ai_generated_required_skills = ""
+                    st.session_state.ai_generated_preferred_skills = ""
+                    st.success("✅ AI content cleared!")
+                    st.rerun()
+        
+        st.markdown("---")
+        
+        # Single unified form
         with st.form("job_creation_form"):
-            # Basic job information
+            # Additional job information (location and employment type)
             col1, col2 = st.columns(2)
             
             with col1:
-                job_title = st.text_input(
-                    "Job Title *", 
-                    placeholder="e.g., Senior Python Developer"
-                )
-                
-                company_name = st.text_input(
-                    "Company Name *",
-                    placeholder="e.g., Tech Solutions Inc."
-                )
-                
                 location = st.text_input(
                     "Location",
                     placeholder="e.g., Remote, New York, NY"
                 )
             
             with col2:
-                department = st.text_input(
-                    "Department",
-                    placeholder="e.g., Engineering, Marketing"
-                )
-                
-                experience_level = st.selectbox(
-                    "Experience Level",
-                    ["Entry Level (0-2 years)", "Mid Level (3-5 years)", "Senior Level (6-10 years)", "Lead/Principal (10+ years)"]
-                )
-                
                 employment_type = st.selectbox(
                     "Employment Type",
                     ["Full-time", "Part-time", "Contract", "Internship"]
                 )
             
             # Job description
-            st.subheader("Job Description")
+            st.subheader("📄 Job Description")
             job_description = st.text_area(
                 "Job Description *",
+                value=st.session_state.ai_generated_description,
                 height=200,
                 placeholder="""Describe the role, responsibilities, and what the candidate will be doing...
                 
@@ -857,9 +991,10 @@ We are looking for a Senior Python Developer to join our engineering team. You w
             col1, col2 = st.columns(2)
             
             with col1:
-                st.subheader("Required Skills")
+                st.subheader("🔧 Required Skills")
                 required_skills_input = st.text_area(
                     "Required Skills (one per line) *",
+                    value=st.session_state.ai_generated_required_skills,
                     height=150,
                     placeholder="""Python
 Django
@@ -869,9 +1004,10 @@ Git"""
                 )
             
             with col2:
-                st.subheader("Preferred Skills")
+                st.subheader("⭐ Preferred Skills")
                 preferred_skills_input = st.text_area(
                     "Preferred Skills (one per line)",
+                    value=st.session_state.ai_generated_preferred_skills,
                     height=150,
                     placeholder="""React
 Docker
