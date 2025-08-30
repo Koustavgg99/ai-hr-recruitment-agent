@@ -167,3 +167,7 @@ Thumbs.db
 *.tmp
 *.temp
 *.md  
+*.pdf  
+*.docx  
+*.json 
+*.txt 
