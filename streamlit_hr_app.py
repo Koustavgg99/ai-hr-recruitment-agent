@@ -332,35 +332,7 @@ class HRAutomationApp:
     
     def dashboard_page(self):
         """Main dashboard page"""
-        st.markdown('<h1 class="main-header">🎯 HR Automation Dashboard</h1>', unsafe_allow_html=True)
-        
-        '''# Environment configuration status
-        with st.expander("⚙️ Environment Configuration", expanded=False):
-            try:
-                from config import config
-                status_summary = config.get_status_summary()
-                
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.write("**🤖 AI & APIs:**")
-                    st.write(f"• Gemini AI: {status_summary['gemini_ai']}")
-                    st.write(f"• LinkedIn API: {status_summary['linkedin']}")
-                
-                with col2:
-                    st.write("**📧 Email & Database:**")
-                    st.write(f"• Email Config: {status_summary['email']}")
-                    st.write(f"• Database: {status_summary['database']}")
-                    st.write(f"• Debug Mode: {status_summary['debug_mode']}")
-                    
-                    
-                if not config.is_gemini_configured():
-                    st.info("💡 Add your Gemini API key to the .env file for enhanced resume parsing")
-                    
-            except ImportError:
-                st.warning("Configuration module not available")
-        '''
-        
+        st.markdown('<h1 class="main-header">🎯 HR Automation Dashboard</h1>', unsafe_allow_html=True)  
         # Load data files
         with st.expander("📁 Data Files ", expanded=True):
             if st.button("🔄 Refresh Data"):
