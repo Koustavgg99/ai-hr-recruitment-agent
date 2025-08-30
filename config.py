@@ -53,7 +53,7 @@ class Config:
             not cls.SMTP_USERNAME.endswith('@gmail.com') or cls.SMTP_USERNAME != 'your_email@gmail.com'
         ])
     
-    '''@classmethod
+    @classmethod
     def is_linkedin_configured(cls) -> bool:
         """Check if LinkedIn API is configured"""
         return all([
@@ -63,7 +63,6 @@ class Config:
             cls.LINKEDIN_CLIENT_SECRET.strip() != '',
             not cls.LINKEDIN_CLIENT_ID.startswith('your_')
         ])
-        '''
     
     @classmethod
     def get_status_summary(cls) -> dict:
