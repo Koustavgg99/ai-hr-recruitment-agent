@@ -19,11 +19,5 @@ python-docx>=0.8.11
 typing-extensions>=4.0.0
 chardet>=4.0.0
 
-# Resume builder dependencies
-PyPDF2>=3.0.0
-pymupdf>=1.23.0
-reportlab>=4.0.0
-pillow>=10.0.0
-python-docx>=0.8.11
-textract>=1.6.5
-fitz>=0.0.1.dev2
+
+
