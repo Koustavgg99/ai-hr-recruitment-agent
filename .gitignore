@@ -171,3 +171,4 @@ Thumbs.db
 *.docx  
 *.json 
 *.txt 
+*.env 
