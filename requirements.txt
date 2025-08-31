@@ -27,3 +27,28 @@ pillow>=10.0.0
 python-docx>=0.8.11
 textract>=1.6.5
 fitz>=0.0.1.dev2
+
+# Auto-Fill Dependencies for HR Automation System
+# Install with: pip install -r requirements_autofill.txt
+
+# Resume Parsing
+PyPDF2>=3.0.1
+python-docx>=0.8.11
+spacy>=3.4.0
+
+# LinkedIn Profile Extraction
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+selenium>=4.8.0
+
+# Additional utilities
+lxml>=4.9.0
+urllib3>=1.26.0
+chardet>=5.0.0
+
+# Optional: For better text processing
+nltk>=3.8
+textract>=1.6.3
+
+# Note: After installing spacy, run:
+# python -m spacy download en_core_web_sm
