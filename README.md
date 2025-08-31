@@ -25,9 +25,5 @@ python -m logging hr_automation_main.py
 Track and analyze recruitment insights.
 
 
----
-
-Do you want me to also keep the **bash command** part, or should I shorten that into a single-line note?
-
 
 
