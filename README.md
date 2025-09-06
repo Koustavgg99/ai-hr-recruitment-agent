@@ -4,7 +4,7 @@ A smart HR automation tool that simplifies recruitment by shortlisting candidate
 
 🌟 Features
 
-**Core Functionality**
+**Core Functionality:-**
 
 * **Candidate Shortlisting**: Matches LinkedIn connections to job descriptions
 * **Data Extraction**: Enriches profiles via web scraping & Google search (no API)
@@ -23,6 +23,7 @@ python -m logging hr_automation_main.py
 
 **Analytics Dashboard**
 Track and analyze recruitment insights.
+
 
 
 
